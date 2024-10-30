@@ -17,6 +17,10 @@
       <li><a href='/roles'>roles</a></li>
     {% endif %}
 
+    {% if config.get("ENDPOINT") %}
+      <li><a href='/users_with_roles'>User With roles</a></li>
+    {% endif %}
+
     {% if config.get("B2C_PROFILE_AUTHORITY") %}
       <li><a href='{{config.get("B2C_PROFILE_AUTHORITY")}}?client_id={{config.get("CLIENT_ID")}}'>Edit Profile</a></li>
     {% endif %}
