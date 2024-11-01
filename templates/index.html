@@ -2,63 +2,73 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Microsoft Identity Python Web App: Index</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
 <body>
-    <h1>Microsoft Identity Python Web App</h1>
-    <h2>Welcome {{ user.get("name") }}!</h2>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">AdminPanel Manager</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav mr-auto">
+                    {% if config.get("ENDPOINT") %}
+                      <li class="nav-item"><a class="nav-link" href='/call_downstream_api'>Call a downstream API</a></li>
+                    {% endif %}
+                    {% if config.get("ENDPOINT") %}
+                      <li class="nav-item"><a class="nav-link" href='/roles'>Roles</a></li>
+                    {% endif %}
+                    {% if config.get("ENDPOINT") %}
+                      <li class="nav-item"><a class="nav-link" href='/users_with_roles'>User With Roles</a></li>
+                    {% endif %}
+                    {% if config.get("B2C_PROFILE_AUTHORITY") %}
+                      <li class="nav-item"><a class="nav-link" href='{{config.get("B2C_PROFILE_AUTHORITY")}}?client_id={{config.get("CLIENT_ID")}}'>Edit Profile</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                </ul>
+                <span class="navbar-text">
+                    Welcome {{ user.get("name") }}!
+                </span>
+            </div>
+        </div>
+    </nav>
 
-    <ul>
-    {% if config.get("ENDPOINT") %}
-      <li><a href='/call_downstream_api'>Call a downstream API</a></li>
-    {% endif %}
+    <div class="container mt-4">
+        <h1 class="text-center">Microsoft Identity Python Web App</h1>
 
-    {% if config.get("ENDPOINT") %}
-      <li><a href='/roles'>roles</a></li>
-    {% endif %}
+        <div class="mt-5">
+            <h3>Lookup User Roles</h3>
+            <form id="userRoleForm" class="form-inline">
+                <label for="email" class="sr-only">Enter User Email:</label>
+                <input type="email" id="email" name="email" class="form-control mb-2 mr-sm-2" required placeholder="user@example.com">
+                <button type="submit" class="btn btn-primary mb-2">Get Roles</button>
+            </form>
+        </div>
 
-    {% if config.get("ENDPOINT") %}
-      <li><a href='/users_with_roles'>User With roles</a></li>
-    {% endif %}
+        <div id="assignedRolesList" class="mt-4">
+            <h3>Assigned Roles</h3>
+            <ul id="roleList" class="list-group"></ul> <!-- This will hold the assigned roles -->
+            <div id="result" class="result"></div> <!-- Use this for messages related to role actions -->
+        </div>
 
-    {% if config.get("B2C_PROFILE_AUTHORITY") %}
-      <li><a href='{{config.get("B2C_PROFILE_AUTHORITY")}}?client_id={{config.get("CLIENT_ID")}}'>Edit Profile</a></li>
-    {% endif %}
+        <div id="assignRolesSection" style="display: none;" class="mt-4">
+            <h3>Assign Other Roles</h3>
+            <form id="roleAssignmentForm" class="form-inline">
+                <label for="roleDropdown" class="sr-only">Select Roles:</label>
+                <select id="roleDropdown" name="roles" class="form-control mb-2 mr-sm-2" multiple required></select>
+                <button type="submit" class="btn btn-success mb-2">Assign Selected Roles</button>
+            </form>
+            <button id="removeRoleButton" class="btn btn-danger mb-2">Remove Selected Roles</button>
+        </div>
 
-    <li><a href="/logout">Logout</a></li>
-    </ul>
-
-
-    <h3>Lookup User Roles</h3>
-    <form id="userRoleForm">
-        <label for="email">Enter User Email:</label>
-        <input type="email" id="email" name="email" required placeholder="user@example.com">
-        <button type="submit">Get Roles</button>
-    </form>
-
-    <div id="assignedRolesList">
-        <h3>Assigned Roles</h3>
-        <ul id="roleList"></ul> <!-- This will hold the assigned roles -->
-        <div id="result" class="result"></div> <!-- Use this for messages related to role actions -->
+        <hr>
+        <footer class="text-right mt-4">Powered by Identity Web {{ version }}</footer>
     </div>
 
-    <div id="assignRolesSection" style="display: none;">
-        <h3>Assign Other Roles</h3>
-        <form id="roleAssignmentForm">
-            <label for="roleDropdown">Select Roles:</label>
-            <select id="roleDropdown" name="roles" multiple required></select>
-            <button type="submit">Assign Selected Roles</button>
-        </form>
-        <button id="removeRoleButton">Remove Selected Roles</button>
-    </div>
-
-<script src="{{ url_for('static',filename='script.js') }}"> </script>
-
-
-    <hr>
-    <footer style="text-align: right">Powered by Identity Web {{ version }}</footer>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-
