@@ -11,7 +11,7 @@ document.getElementById('userRoleForm').addEventListener('submit', function(even
         return;
     }
 
-    // Make a POST request to the backend
+    // Fetch assigned roles for the user
     fetch('/user_roles', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -30,29 +30,51 @@ document.getElementById('userRoleForm').addEventListener('submit', function(even
         resultDiv.innerHTML = '';
 
         // Check if data has roles
-        if (data.length > 0) {
-            const displayName = data[0].DisplayName;
-            const applicationDisplayName = data[0].applicationDisplayName;
+        const assignedRoles = data.assignedRoles || [];
+        const availableRoles = data.availableRoles || [];
+        const displayName = data.displayName || email;
 
-            // Add title
-            const title = document.createElement('h5');
-            title.textContent = `Roles for ${displayName} (${applicationDisplayName})`;
-            resultDiv.appendChild(title);
+        // Display assigned roles
+        const title = document.createElement('h5');
+        title.textContent = `Roles for ${displayName}`;
+        resultDiv.appendChild(title);
 
-            // Create list for roles
-            const roleList = document.createElement('ul');
-            data.forEach(role => {
+        const roleList = document.createElement('ul');
+        if (assignedRoles.length > 0) {
+            assignedRoles.forEach(role => {
                 const roleItem = document.createElement('li');
-                roleItem.textContent = `${role.roleName} - Assigned on: ${new Date(role.assignmentDate).toLocaleString()}`;
+                roleItem.textContent = `${role.displayName} - Assigned on: N/A`; // Update with actual assignment date if available
                 roleList.appendChild(roleItem);
             });
-            resultDiv.appendChild(roleList);
         } else {
-            resultDiv.textContent = `No roles found for ${email}.`;
+            roleList.innerHTML = `<li>No roles assigned.</li>`;
         }
+        resultDiv.appendChild(roleList);
+
+        // Show the assign roles section
+        document.getElementById('assignRolesSection').style.display = 'block';
+
+        // Populate the dropdown with available roles excluding assigned ones
+        fetchRoles(assignedRoles, availableRoles);
     })
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
         resultDiv.innerHTML = `Error fetching roles: ${error.message}. Please try again.`;
     });
 });
+
+// Fetch available roles for dropdown, filtering out assigned roles
+function fetchRoles(assignedRoles, availableRoles) {
+    const roleDropdown = document.getElementById('roleDropdown');
+    roleDropdown.innerHTML = '';  // Clear previous options
+    
+    availableRoles.forEach(role => {
+        // Only add roles that are not in the assignedRoles array
+        if (!assignedRoles.some(assignedRole => assignedRole.id === role.id)) {
+            const option = document.createElement('option');
+            option.value = role.id;
+            option.textContent = role.displayName;
+            roleDropdown.appendChild(option);
+        }
+    });
+}

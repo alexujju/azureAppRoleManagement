@@ -40,6 +40,15 @@
 
 <div id="result" class="result"></div>
 
+<div id="assignRolesSection" style="display: none;">
+  <h3>Assign Other Roles</h3>
+  <form id="roleAssignmentForm">
+      <label for="roleDropdown">Select Roles:</label>
+      <select id="roleDropdown" name="roles" multiple required></select>
+      <button type="button" onclick="assignRoles()">Assign Selected Roles</button>
+  </form>
+</div>
+
 <script src="{{ url_for('static',filename='script.js') }}"> </script>
 
 

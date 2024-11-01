@@ -130,22 +130,37 @@ def get_user_roles_by_email(email):
         assignments_response.raise_for_status()
         assignments = assignments_response.json().get("value", [])
 
-        # Step 4: Prepare the result
-        result = []
+        #preparing the reuslt for the assigned role Ids and display name
+
+        assigned_roles = []  # Store assigned roles with IDs and display names
+        assigned_role_ids = []  # To filter available roles later
         for assignment in assignments:
             role_id = assignment["appRoleId"]
+            assigned_role_ids.append(role_id)
+            # Get the role name
             role_name = next((role["displayName"] for role in roles if role["id"] == role_id), "Unknown Role")
-            assignment_date = assignment.get("createdDateTime", "N/A")
-            result.append({
-                "DisplayName": user.get("displayName"),
-            
-                "email": user.get("userPrincipalName"),
-                "applicationDisplayName": application_display_name,  # Assuming this is the display name you want
-                "roleName": role_name,
-                "assignmentDate": assignment_date
+            assigned_roles.append({
+                "id": role_id,
+                "displayName": role_name
             })
 
-        return result, 200  # Return the data and status code
+        
+        # Prepare the list of available roles
+        available_roles = []
+        for role in roles:
+            role_display_name = role["displayName"]
+            role_id = role["id"]
+            available_roles.append({
+                "id": role_id,
+                "displayName": role_display_name
+            })
+
+        return {
+            "assignedRoles": assigned_roles,  # Now includes IDs and display names
+            "availableRoles": available_roles,
+            "displayName": user.get("displayName"),
+            "email": user.get("userPrincipalName"),
+        }, 200  # Return the data and status code
 
     except requests.exceptions.RequestException as req_err:
         logging.error(f"Request error while fetching user roles: {req_err}")
@@ -153,3 +168,29 @@ def get_user_roles_by_email(email):
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}")
         return {"error": str(e)}, 500
+
+
+
+    #     # Step 4: Prepare the result
+    #     result = []
+    #     for assignment in assignments:
+    #         role_id = assignment["appRoleId"]
+    #         role_name = next((role["displayName"] for role in roles if role["id"] == role_id), "Unknown Role")
+    #         assignment_date = assignment.get("createdDateTime", "N/A")
+    #         result.append({
+    #             "DisplayName": user.get("displayName"),
+            
+    #             "email": user.get("userPrincipalName"),
+    #             "applicationDisplayName": application_display_name,  # Assuming this is the display name you want
+    #             "roleName": role_name,
+    #             "assignmentDate": assignment_date
+    #         })
+
+    #     return result, 200  # Return the data and status code
+
+    # except requests.exceptions.RequestException as req_err:
+    #     logging.error(f"Request error while fetching user roles: {req_err}")
+    #     return {"error": "Failed to fetch data from Microsoft Graph API."}, 500
+    # except Exception as e:
+    #     logging.error(f"An unexpected error occurred: {e}")
+    #     return {"error": str(e)}, 500

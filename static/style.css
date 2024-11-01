@@ -36,3 +36,10 @@ h5 {
     font-size: 1.2em;            /* Increase font size */
     color: #565656;                 /* Dark gray color for better readability */
 }
+
+h6 {
+    text-align: left;           /* Center align the heading */
+    margin: 20px 0;              /* Add some margin above and below */
+    font-size: 1.2em;            /* Increase font size */
+    color: #9d8cfd;                 /* Dark gray color for better readability */
+}
