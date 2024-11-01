@@ -221,14 +221,56 @@ def assign_roles_to_user(email, role_ids):
         return {"error": str(e)}, 500
 
 
+def remove_user_roles(email, role_ids):
+    try:
+        token = get_access_token()
+        if not token:
+            return {"error": "Failed to obtain access token."}, 401  # Handle token acquisition failure
 
+        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
+        # Step 1: Find the user by email
+        user_url = f"https://graph.microsoft.com/v1.0/users/{email}"
+        user_response = requests.get(user_url, headers=headers)
+        user_response.raise_for_status()
+        user = user_response.json()
+        
+        user_id = user.get("id")
+        if not user_id:
+            return {"error": "User not found."}, 404
 
+        service_principal_id = current_app.config['SERVICE_PRINCIPAL']  # Service principal ID from config
+        removed_role_ids = []
 
+        # Step 2: Get all assigned roles for the user in this service principal
+        assigned_roles_url = f"https://graph.microsoft.com/v1.0/users/{user_id}/appRoleAssignments"
+        assigned_roles_response = requests.get(assigned_roles_url, headers=headers)
+        assigned_roles_response.raise_for_status()
+        assigned_roles = assigned_roles_response.json().get("value", [])
 
+        # Step 3: Identify and delete the specific role assignments
+        for role in assigned_roles:
+            if role.get("appRoleId") in role_ids and role.get("resourceId") == service_principal_id:
+                app_role_assignment_id = role.get("id")
+                
+                # Construct the DELETE URL with the specific appRoleAssignment ID
+                delete_url = f"https://graph.microsoft.com/v1.0/servicePrincipals/{service_principal_id}/appRoleAssignedTo/{app_role_assignment_id}"
+                delete_response = requests.delete(delete_url, headers=headers)
+                
+                if delete_response.status_code == 204:
+                    removed_role_ids.append(role.get("appRoleId"))
 
+        if removed_role_ids:
+            return {"message": f"Successfully removed roles: {', '.join(removed_role_ids)}"}, 200
+        else:
+            return {"message": "No roles were removed."}, 200
 
-
+    except requests.exceptions.RequestException as req_err:
+        logging.error(f"Request error while removing roles: {req_err}")
+        return {"error": "Failed to remove roles via Microsoft Graph API."}, 500
+    except Exception as e:
+        logging.error(f"An unexpected error occurred: {e}")
+        return {"error": str(e)}, 500
 
     #     # Step 4: Prepare the result
     #     result = []

@@ -5,7 +5,7 @@ from auth_helper import log_in, complete_log_in, log_out, get_token_for_user, ge
 import app_config
 import requests
 from auth_helper import get_access_token
-from roles_helper import fetch_app_roles, get_user_roles_with_names, get_user_roles_by_email, assign_roles_to_user
+from roles_helper import fetch_app_roles, get_user_roles_with_names, get_user_roles_by_email, assign_roles_to_user, remove_user_roles
 #from roles_helper import get_user_roles_with_names
 from flask import jsonify
 
@@ -86,6 +86,17 @@ def assign_roles():
         return jsonify({"error": "Email and role IDs are required."}), 400
 
     response, status_code = assign_roles_to_user(email, role_ids)
+    return jsonify(response), status_code
+
+@app.route("/remove_roles", methods= ["DELETE"])
+def remove_roles():
+    data =  request.get_json()
+    email =  data.get("email")
+    role_ids = data.get("role_ids") #expecting a list role to get 
+    if not email or not role_ids:
+        return jsonify({"error": "Email and role IDs are required."}), 400
+    
+    response, status_code = remove_user_roles(email, role_ids)
     return jsonify(response), status_code
 
 
