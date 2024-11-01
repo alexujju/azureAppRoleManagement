@@ -40,7 +40,7 @@ document.getElementById('userRoleForm').addEventListener('submit', function(even
         displayAssignedRoles(assignedRoles); // Display assigned roles
 
         document.getElementById('assignRolesSection').style.display = 'block';
-        fetchRoles(assignedRoles, availableRoles);
+        fetchRoles(assignedRoles, availableRoles); // Fetch available roles
     })
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
@@ -98,30 +98,28 @@ document.addEventListener('DOMContentLoaded', function() {
             // Display success message
             resultDiv.innerHTML = data.message;
 
-            // Optionally, refresh the assigned roles after successful assignment
-            fetch('/user_roles', {
+            // Fetch updated assigned roles
+            return fetch('/user_roles', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: email })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(errData => {
-                        throw new Error(errData.error || 'Network response was not ok');
-                    });
-                }
-                return response.json(); // Parse the JSON from the response
-            })
-            .then(data => {
-                // Refresh the displayed roles
-                const assignedRoles = data.assignedRoles || [];
-                resultDiv.innerHTML = `Roles for ${email}:`;
-                displayAssignedRoles(assignedRoles); // Call to display updated roles
-            })
-            .catch(error => {
-                console.error('Error fetching updated roles:', error);
-                resultDiv.innerHTML = `Error fetching updated roles: ${error.message}.`;
             });
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => {
+                    throw new Error(errData.error || 'Network response was not ok');
+                });
+            }
+            return response.json(); // Parse the JSON from the response
+        })
+        .then(data => {
+            const assignedRoles = data.assignedRoles || [];
+            const availableRoles = data.availableRoles || []; // Fetch available roles from the response
+            displayAssignedRoles(assignedRoles); // Call to display updated roles
+
+            // Call fetchRoles to update the role dropdown
+            fetchRoles(assignedRoles, availableRoles);
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
@@ -172,29 +170,28 @@ function removeSelectedRoles() {
         alert(data.message); // Show success message
         resultDiv.innerHTML = data.message;
 
-
-        // Call the function to fetch and display updated assigned roles
-        fetch('/user_roles', {
+        // Fetch updated assigned roles
+        return fetch('/user_roles', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email })
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(errData => {
-                    throw new Error(errData.error || 'Network response was not ok');
-                });
-            }
-            return response.json(); // Parse the JSON from the response
-        })
-        .then(data => {
-            const assignedRoles = data.assignedRoles || [];
-            displayAssignedRoles(assignedRoles); // Call to display updated roles
-        })
-        .catch(error => {
-            console.error('Error fetching updated roles:', error);
-            alert(`Error fetching updated roles: ${error.message}.`);
         });
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errData => {
+                throw new Error(errData.error || 'Network response was not ok');
+            });
+        }
+        return response.json(); // Parse the JSON from the response
+    })
+    .then(data => {
+        const assignedRoles = data.assignedRoles || [];
+        const availableRoles = data.availableRoles || []; // Fetch available roles from the response
+        displayAssignedRoles(assignedRoles); // Call to display updated roles
+
+        // Call fetchRoles to update the role dropdown
+        fetchRoles(assignedRoles, availableRoles);
     })
     .catch(error => {
         console.error('Error removing roles:', error);
