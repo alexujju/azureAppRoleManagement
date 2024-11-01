@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Microsoft Identity Python Web App: Index</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 </head>
 <body>
     <h1>Microsoft Identity Python Web App</h1>
@@ -27,6 +29,19 @@
 
     <li><a href="/logout">Logout</a></li>
     </ul>
+
+
+    <h3>Lookup User Roles</h3>
+    <form id="userRoleForm">
+      <label for="email">Enter User Email:</label>
+      <input type="email" id="email" name="email" required placeholder="user@example.com">
+      <button type="submit">Get Roles</button>
+    </form>
+
+<div id="result" class="result"></div>
+
+<script src="{{ url_for('static',filename='script.js') }}"> </script>
+
 
     <hr>
     <footer style="text-align: right">Powered by Identity Web {{ version }}</footer>

@@ -63,9 +63,12 @@ def user_roles():
     return jsonify(data), status_code
 
 
-@app.route("/user_roles", methods=["GET"])
+@app.route("/user_roles", methods=["POST"])
 def user_roles_by_email():
-    email = request.args.get("email")
+    data = request.get_json()
+    email = data.get("email")
+
+
     if not email:
         return jsonify({"error": "Email parameter is required."}), 400
 

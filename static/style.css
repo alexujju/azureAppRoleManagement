@@ -1,0 +1,38 @@
+/* Basic styling for the form */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+
+}
+
+form {
+    margin-bottom: 20px;
+}
+input[type="email"] {
+    padding: 8px;
+    margin-right: 10px;
+    width: 250px;
+}
+button {
+    padding: 8px 12px;
+}
+.result {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+h3 {
+    text-align: center;           /* Center align the heading */
+    margin: 20px 0;              /* Add some margin above and below */
+    font-size: 1.5em;            /* Increase font size */
+    color: #fc0f0f;                 /* Dark gray color for better readability */
+}
+
+h5 {
+    text-align: left;           /* Center align the heading */
+    margin: 20px 0;              /* Add some margin above and below */
+    font-size: 1.2em;            /* Increase font size */
+    color: #565656;                 /* Dark gray color for better readability */
+}
