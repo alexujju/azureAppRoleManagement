@@ -5,7 +5,7 @@ from auth_helper import log_in, complete_log_in, log_out, get_token_for_user, ge
 import app_config
 import requests
 from auth_helper import get_access_token
-from roles_helper import fetch_app_roles, get_user_roles_with_names, get_user_roles_by_email
+from roles_helper import fetch_app_roles, get_user_roles_with_names, get_user_roles_by_email, assign_roles_to_user
 #from roles_helper import get_user_roles_with_names
 from flask import jsonify
 
@@ -75,6 +75,18 @@ def user_roles_by_email():
     data, status_code = get_user_roles_by_email(email)
     return jsonify(data), status_code
 
+
+@app.route("/assign_roles", methods=["POST"])
+def assign_roles():
+    data = request.get_json()
+    email = data.get("email")
+    role_ids = data.get("role_ids")  # Expecting a list of role IDs
+
+    if not email or not role_ids:
+        return jsonify({"error": "Email and role IDs are required."}), 400
+
+    response, status_code = assign_roles_to_user(email, role_ids)
+    return jsonify(response), status_code
 
 
 if __name__ == "__main__":
