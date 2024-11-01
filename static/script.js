@@ -37,26 +37,7 @@ document.getElementById('userRoleForm').addEventListener('submit', function(even
         title.textContent = `Roles for ${displayName}`;
         resultDiv.appendChild(title);
 
-        const roleList = document.createElement('ul');
-        if (assignedRoles.length > 0) {
-            assignedRoles.forEach(role => {
-                const roleItem = document.createElement('li');
-                roleItem.textContent = `${role.displayName} - Assigned on: ${role.assignmentDate || 'N/A'}`;
-                
-                // Add a checkbox for removal
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.value = role.id; // Role ID for removal
-                checkbox.classList.add('role-checkbox'); // Optional: add a class for easy selection
-                
-                // Append checkbox to the list item
-                roleItem.prepend(checkbox);
-                roleList.appendChild(roleItem);
-            });
-        } else {
-            roleList.innerHTML = `<li>No roles assigned.</li>`;
-        }
-        resultDiv.appendChild(roleList);
+        displayAssignedRoles(assignedRoles); // Display assigned roles
 
         document.getElementById('assignRolesSection').style.display = 'block';
         fetchRoles(assignedRoles, availableRoles);
@@ -135,21 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Refresh the displayed roles
                 const assignedRoles = data.assignedRoles || [];
                 resultDiv.innerHTML = `Roles for ${email}:`;
-                const roleList = document.createElement('ul');
-                assignedRoles.forEach(role => {
-                    const roleItem = document.createElement('li');
-                    roleItem.textContent = `${role.displayName} - Assigned on: ${role.assignmentDate || 'N/A'}`;
-
-                    // Add a checkbox for removal
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.value = role.id; // Role ID for removal
-                    checkbox.classList.add('role-checkbox'); // Optional: add a class for easy selection
-                
-                    roleItem.prepend(checkbox);
-                    roleList.appendChild(roleItem);
-                });
-                resultDiv.appendChild(roleList);
+                displayAssignedRoles(assignedRoles); // Call to display updated roles
             })
             .catch(error => {
                 console.error('Error fetching updated roles:', error);
@@ -164,20 +131,33 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Function to remove selected roles
+document.getElementById('removeRoleButton').addEventListener('click', removeSelectedRoles);
+
 function removeSelectedRoles() {
     const selectedCheckboxes = document.querySelectorAll('.role-checkbox:checked');
     const roleIdsToRemove = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+    const email = document.getElementById('email').value;
 
+    const resultDiv = document.getElementById('result'); // Ensure this ID matches your HTML
+    resultDiv.innerHTML = 'Removing roles...';
+
+    // Validate selected role IDs
     if (roleIdsToRemove.length === 0) {
         alert('Please select at least one role to remove.');
         return;
     }
 
+    // Validate email
+    if (!email) {
+        alert('Email is required to remove roles.');
+        return;
+    }
+
     // Send the removal request to the server
     fetch('/remove_roles', {
-        method: 'POST',
+        method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role_ids: roleIdsToRemove })
+        body: JSON.stringify({ email: email, role_ids: roleIdsToRemove })
     })
     .then(response => {
         if (!response.ok) {
@@ -190,16 +170,30 @@ function removeSelectedRoles() {
     .then(data => {
         // Refresh the assigned roles display after removal
         alert(data.message); // Show success message
+        resultDiv.innerHTML = data.message;
+
+
         // Call the function to fetch and display updated assigned roles
         fetch('/user_roles', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: document.getElementById('email').value })
+            body: JSON.stringify({ email: email })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => {
+                    throw new Error(errData.error || 'Network response was not ok');
+                });
+            }
+            return response.json(); // Parse the JSON from the response
+        })
         .then(data => {
             const assignedRoles = data.assignedRoles || [];
             displayAssignedRoles(assignedRoles); // Call to display updated roles
+        })
+        .catch(error => {
+            console.error('Error fetching updated roles:', error);
+            alert(`Error fetching updated roles: ${error.message}.`);
         });
     })
     .catch(error => {
@@ -208,5 +202,29 @@ function removeSelectedRoles() {
     });
 }
 
-// Add event listener for the remove roles button
-document.getElementById('removeRoleButton').addEventListener('click', removeSelectedRoles);
+// Function to display assigned roles
+function displayAssignedRoles(assignedRoles) {
+    const resultDiv = document.getElementById('result');
+    const roleList = document.createElement('ul');
+    roleList.innerHTML = ''; // Clear the existing list
+
+    if (assignedRoles.length === 0) {
+        roleList.innerHTML = '<li>No roles assigned.</li>';
+    } else {
+        assignedRoles.forEach(role => {
+            const roleItem = document.createElement('li');
+            roleItem.textContent = `${role.displayName} - Assigned on: ${role.assignmentDate || 'N/A'}`;
+
+            // Add a checkbox for removal
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = role.id; // Role ID for removal
+            checkbox.classList.add('role-checkbox'); // Optional: add a class for easy selection
+
+            // Append checkbox to the list item
+            roleItem.prepend(checkbox);
+            roleList.appendChild(roleItem);
+        });
+    }
+    resultDiv.appendChild(roleList); // Append the role list to the result div
+}

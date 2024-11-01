@@ -32,37 +32,27 @@
 
 
     <h3>Lookup User Roles</h3>
-<form id="userRoleForm">
-    <label for="email">Enter User Email:</label>
-    <input type="email" id="email" name="email" required placeholder="user@example.com">
-    <button type="submit">Get Roles</button>
-</form>
-
-<div id="assignedRolesList">
-    <h3>Assigned Roles</h3>
-    <ul id="roleList"></ul> <!-- This will hold the assigned roles -->
-    <div id="result" class="result"></div> <!-- Use this for messages related to role actions -->
-</div>
-
-<div id="assignRolesSection" style="display: none;">
-    <h3>Assign Other Roles</h3>
-    <form id="roleAssignmentForm">
-        <label for="roleDropdown">Select Roles:</label>
-        <select id="roleDropdown" name="roles" multiple required></select>
-        <button type="submit">Assign Selected Roles</button>
+    <form id="userRoleForm">
+        <label for="email">Enter User Email:</label>
+        <input type="email" id="email" name="email" required placeholder="user@example.com">
+        <button type="submit">Get Roles</button>
     </form>
-    <button id="removeRoleButton">Remove Selected Roles</button>
-</div>
 
+    <div id="assignedRolesList">
+        <h3>Assigned Roles</h3>
+        <ul id="roleList"></ul> <!-- This will hold the assigned roles -->
+        <div id="result" class="result"></div> <!-- Use this for messages related to role actions -->
+    </div>
 
-<div id="assignRolesSection" style="display: none;">
-  <h3>Assign Other Roles</h3>
-  <form id="roleAssignmentForm">
-      <label for="roleDropdown">Select Roles:</label>
-      <select id="roleDropdown" name="roles" multiple required></select>
-      <button type="submit">Assign Selected Roles</button> <!-- type of button would be submit -->
-  </form>
-</div>
+    <div id="assignRolesSection" style="display: none;">
+        <h3>Assign Other Roles</h3>
+        <form id="roleAssignmentForm">
+            <label for="roleDropdown">Select Roles:</label>
+            <select id="roleDropdown" name="roles" multiple required></select>
+            <button type="submit">Assign Selected Roles</button>
+        </form>
+        <button id="removeRoleButton">Remove Selected Roles</button>
+    </div>
 
 <script src="{{ url_for('static',filename='script.js') }}"> </script>
 
