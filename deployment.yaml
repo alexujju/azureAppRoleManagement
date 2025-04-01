@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: role-manager
+  labels:
+    app: role-manager
+    version: v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: role-manager
+  template:
+    metadata:
+      labels:
+        app: role-manager
+    spec:
+      containers:
+      - name: role-manager
+        image: alexujju10/role_manager:latest
+        ports:
+        - containerPort: 5000
