@@ -3,6 +3,7 @@ from flask import current_app
 from auth_helper import get_access_token  # Import your token acquisition function
 #import jsonify
 import logging
+from logging_config import logger
 
 def fetch_app_roles():
     token = get_access_token()  # Get the access token for Microsoft Graph API
@@ -94,6 +95,7 @@ def get_user_roles_by_email(email):
         A list of dictionaries containing user name, email, application display name, role name, and assignment date.
     """
     try:
+        
         # Get the access token
         token = get_access_token()
         if not token:
@@ -180,6 +182,7 @@ def get_user_roles_by_email(email):
 
 def assign_roles_to_user(email, role_ids):
     try:
+        
         token = get_access_token()
         if not token:
             return {"error": "Failed to obtain access token."}, 401  # Handle token acquisition failure
@@ -210,11 +213,12 @@ def assign_roles_to_user(email, role_ids):
             assignment_response = requests.post(assignment_url, headers=headers, json=assignment_data)
             if assignment_response.status_code == 201:
                 assigned_role_ids.append(role_id)  # Keep track of successfully assigned roles
-
+            #logger.info(f"Attempting to assign role {assigned_role_ids} to user {user_id}")
         return {"message": f"Successfully assigned roles: {', '.join(assigned_role_ids)}"}, 201
 
     except requests.exceptions.RequestException as req_err:
         logging.error(f"Request error while assigning roles: {req_err}")
+        #logger.info(f"Successfully assigned role {assigned_role_ids} to user {user_id}")
         return {"error": "Failed to assign roles via Microsoft Graph API."}, 500
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}")

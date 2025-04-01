@@ -15,11 +15,7 @@
                 <ul class="navbar-nav mr-auto">
                     {% if config.get("ENDPOINT") %}
                       <li class="nav-item"><a class="nav-link" href='/call_downstream_api'>Call a downstream API</a></li>
-                    {% endif %}
-                    {% if config.get("ENDPOINT") %}
                       <li class="nav-item"><a class="nav-link" href='/roles'>Roles</a></li>
-                    {% endif %}
-                    {% if config.get("ENDPOINT") %}
                       <li class="nav-item"><a class="nav-link" href='/users_with_roles'>User With Roles</a></li>
                     {% endif %}
                     {% if config.get("B2C_PROFILE_AUTHORITY") %}
@@ -37,6 +33,7 @@
     <div class="container mt-4">
         <h1 class="text-center">AdminPanel Manager</h1>
 
+        <!-- Lookup User Roles Section -->
         <div class="mt-5">
             <h3>Lookup User Roles</h3>
             <form id="userRoleForm" class="form-inline">
@@ -46,27 +43,38 @@
             </form>
         </div>
 
+        <!-- Assigned Roles Section -->
         <div id="assignedRolesList" class="mt-4">
             <h3>Assigned Roles</h3>
-            <ul id="roleList" class="list-group"></ul> <!-- This will hold the assigned roles -->
-            <div id="result" class="result"></div> <!-- Use this for messages related to role actions -->
-            
+            <ul id="roleList" class="list-group"></ul> <!-- Dynamically generated assigned roles -->
+            <div id="result" class="result"></div> <!-- For messages related to role actions -->
         </div>
 
+        <!-- Assign and Remove Roles Section -->
         <div id="assignRolesSection" style="display: none;" class="mt-4">
-            <h3>Assign Other Roles</h3>
-            <form id="roleAssignmentForm" class="form-inline">
-                <label for="roleDropdown" class="sr-only">Select Roles:</label>
-                <select id="roleDropdown" name="roles" class="form-control mb-2 mr-sm-2" multiple required></select>
-                <button type="submit" class="btn btn-success mb-2">Assign Selected Roles</button>
-            </form>
-            <button id="removeRoleButton" class="btn btn-danger mb-2">Remove Selected Roles</button>
+            <h3>Assign or Remove Roles</h3>
+            <div class="row">
+                <!-- Assign Roles Dropdown -->
+                <div class="col-md-8">
+                    <form id="roleAssignmentForm" class="form-inline">
+                        <label for="roleDropdown" class="sr-only">Select Roles:</label>
+                        <select id="roleDropdown" name="roles" class="form-control mb-2 mr-sm-2" multiple required></select>
+                        <button type="submit" class="btn btn-success mb-2">Assign Selected Roles</button>
+                    </form>
+                </div>
+
+                <!-- Remove Selected Roles Button -->
+                <div class="col-md-4 text-right">
+                    <button id="removeRoleButton" class="btn btn-danger mb-2">Remove Selected Roles</button>
+                </div>
+            </div>
         </div>
 
         <hr>
         <footer class="text-right mt-4">AdminPanel Manager V1</footer>
     </div>
 
+    <!-- Scripts -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
