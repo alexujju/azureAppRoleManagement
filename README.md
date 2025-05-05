@@ -95,7 +95,8 @@ These should be passed via Kubernetes ConfigMap or `.env` for local development:
 
 ## 📸 UI Snapshot
 
-> (You can add screenshots here to show how the UI looks.)
+> ![image](https://github.com/user-attachments/assets/a666dbdc-bef3-4d18-b4ef-da0ddd132ade)
+
 
 ---
 
